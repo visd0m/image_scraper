@@ -1,10 +1,12 @@
 defmodule Scraper do
   use Hound.Helpers
 
+  defstruct session: nil
+
   # ======= SELENIUM
 
-  def start do
-    Hound.start_session
+  def new do
+    %Scraper{session: Hound.start_session}
   end
 
   def get_random_image_selenium(key_word, count) do
@@ -14,23 +16,26 @@ defmodule Scraper do
   end
 
   defp scrape do
-    :timer.sleep(1500)
     IO.puts("--> getting a random image")
+    :timer.sleep(1000)
 
-    get_random_image(find_all_elements(:class, "rg_l"))
+    elem = find_element(:id, "rg_s")
+    get_random_image(find_all_within_element(elem, :class, "rg_l"))
       |> case do
+        {:ok, nil} ->
+          refresh_page()
         {:ok, result} ->
-          :timer.sleep(500)
           click(result)
           :timer.sleep(500)
           get_related_search()
           |> case do
             {:ok, result} ->
               click(result)
+              :timer.sleep(500)
             _ ->
               click(find_element(:class, "i3593"))
-              refresh_page()
               :timer.sleep(500)
+              refresh_page()
             end
         _ -> IO.puts("no images found")
         end
