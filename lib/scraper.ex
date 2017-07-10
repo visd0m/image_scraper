@@ -17,7 +17,7 @@ defmodule Scraper do
 
   defp scrape do
     IO.puts("--> getting a random image")
-    :timer.sleep(1000)
+    :timer.sleep(2000)
 
     elem = find_element(:id, "rg_s")
     get_random_image(find_all_within_element(elem, :class, "rg_l"))
@@ -26,17 +26,16 @@ defmodule Scraper do
           refresh_page()
         {:ok, result} ->
           click(result)
-          :timer.sleep(500)
+          :timer.sleep(1000)
           get_related_search()
-          |> case do
-            {:ok, result} ->
-              click(result)
-              :timer.sleep(500)
-            _ ->
-              click(find_element(:class, "i3593"))
-              :timer.sleep(500)
-              refresh_page()
-            end
+            |> case do
+              {:ok, result} ->
+                click(result)
+                :timer.sleep(1000)
+              _ ->
+                click(find_element(:class, "i3593"))
+                refresh_page()
+              end
         _ -> IO.puts("no images found")
         end
   end
@@ -49,7 +48,7 @@ defmodule Scraper do
           a = find_within_element(elem, :tag, "a")
           {:ok, a}
         _ ->
-          IO.puts("--> no related search found")
+          IO.puts("--> no related search not found")
           {:error, "no related search found"}
     end
   end
